@@ -1,0 +1,541 @@
+% Nicely sized font on a aptly sized page
+\documentclass[a4paper,12pt]{article}
+
+% TeX gyre pagella fonts
+\usepackage{tgpagella}
+
+% The microtype package for better spacings
+\usepackage{microtype}
+
+% colors
+\usepackage[usenames, dvipsnames]{xcolor}
+
+% For urls
+\usepackage[colorlinks=true]{hyperref}
+
+\hypersetup{
+  citecolor=magenta,
+  linkcolor=Mahogany
+}
+
+% For pretty source-code listings
+\usepackage{minted}
+\setminted[python]{
+  autogobble=true
+}
+
+% Code-inlining for python
+\newcommand{\pyline}[1]{\mintinline{python}|#1|}
+
+% PR and issues
+\newcommand{\pull}[1]{\href{https://github.com/sympy/sympy/pull/#1}{#1}}
+\newcommand{\issue}[1]{\href{https://github.com/sympy/sympy/issue/#1}{#1}}
+
+% Title
+\title{Sympy - Improving the \texttt{series} package\hfill\\ and \texttt{limits}}
+
+% Me
+\author{Sartaj Singh}
+
+% The document
+\begin{document}
+
+% The title
+\maketitle
+
+% Abstract
+\begin{abstract}
+
+  Sympy currently lacks a proper structure for handling and
+  manipulating series. All the series related functionality is defined
+  as methods in \pyline{Expr} class. I plan to give the series package a
+  concrete structure for future development and improvement. I plan to
+  do the following over the summer.
+
+  % Key Points
+  \begin{itemize}
+    \item Sequence classes for defining sequences of coefficients.
+    \item Classes to represent series in general.
+    \item Implement `Formal Power Series', using the above implemented structure.
+    \item Computing limits of sequences.
+  \end{itemize}
+
+\end{abstract}
+
+% Contents
+\tableofcontents
+
+\section{About Me}
+
+\subsection*{The Student}
+
+\begin{quote}
+  \begin{description}
+    \item [Name] {Sartaj Singh}
+    \item [e-mail] {\href{mailto:singhsartaj94@gmail.com}
+      {\nolinkurl{singhsartaj94@gmail.com}}}
+    \item [Github] {\url{https://github.com/leosartaj}}
+    \item [Blog] {\url{https://leosartaj.blogspot.com}}
+  \end{description}
+\end{quote}
+
+\subsection*{The Institute}
+
+\begin{quote}
+  \begin{description}
+    \item [University] {Indian Institute of Technology (BHU), Varanasi}
+    \item [Major] {Mathematics and Computing}
+    \item [Year] {Sophomore}
+    \item [Degree] {Integrated Masters Degree}
+  \end{description}
+\end{quote}
+
+\subsection*{Programming Experience and Mathematical Background}
+
+I have been programming from last two years, and from the past one year in python.
+Apart from python I have experience in C, javascript, PHP. For version control, I have been using git.
+I work on Arch Linux(rolling release rocks!) with \textit{vim} as my primary editor. I like vim because its fast and productive.
+My favorite python feature is list comprehensions, simply because they are \textit{beautiful}.
+I have completed courses on basic mathematical methods, series expansions. 
+
+Recurrence relations are a powerful tool in mathematics. Ability of sympy to solve them fascinates me.
+
+\begin{minted}{python}
+  >>> y = Function('y')
+  >>> rsolve(y(n) - 2*y(n-1), y(n))
+  >>> C0*2**n
+\end{minted}
+
+\subsection*{My Motivation}
+
+I have always been fascinated with the power \textit{Mathematica}
+\cite{mathematica} brings to the process of mathematical study. I soon discovered sympy and decided to give it a shot.
+
+Series play an integral role in field of mathematics. Series have various applications, like solving differential equations.
+How a seemingly complex function can be simplified using series is what fascinates me the most.
+
+\begin{minted}{python}
+  >>> series(cos(4*acos(x))
+  1-8x**2+8x**4 # simple polynomial
+\end{minted}
+
+\subsection*{My Projects}
+\begin{quote}
+  \begin{description}
+    \item [PyChat \cite{pychat}] - A simple asynchronous chat client, based on \emph{Twisted}\cite{twisted} framework.
+    \item [Sub \cite{sub}] - Simple command line tool for downloading subtitles.
+    \item [autosign \cite{autosign}] - Easily add signatures to files
+    \item [PyCross \cite{pycross}] - Single/multiplayer TicTacToe game. Single player is based on \emph{minimax}\cite{minimax} algorithm and \emph{Monte Carlo}\cite{montecarlo} Simulation.
+  \end{description}
+\end{quote}
+
+All of my projects (including others) can be found on my \href{https://github.com/leosartaj}{github} page.
+
+\subsection*{Contributions}
+I started using sympy in January and made my first contributing in February.
+I have been constantly contributing and learning from the community ever since.
+
+\subsubsection*{Merged PR's}
+\begin{itemize}
+  \item \pull{8985}, \pull{9039} - Removed \texttt{\char92 lvert} (not supported by \texttt{matplotlib}) in favor of \texttt{\char92 left |} from latex(Abs)
+  \item \pull{9105} - Fixed \pyline{exp(x).taylor_term} method, it raised \pyline{TypeError} error when called (uncached).
+  \item \pull{9139} - \pyline{factorial(n) >= 1}, now returns \pyline{True} for a \textit{nonnegative} integer \pyline{n}.
+  \item \pull{9142} - Implemented function \pyline{stieltjes} for computing stieltjes constants.
+  \item \pull{9156} - \pyline{Fibonacci(n).limit(n, oo)} and \pyline{Lucas(n).limit(n, oo)} returns \pyline{oo} rather than \pyline{Fibonacci(oo)} and \pyline{Lucas(oo)}. Result is now consistent with factorial and others.
+\end{itemize}
+
+\subsubsection*{Unmerged PR's}
+\begin{itemize}
+  \item \pull{9036} - \textbf{[WIP]} Fixed \pyline{LambertW} to give series expansion at x=0
+  \item \pull{9038} - \textbf{[WIP]} zero=True assumption was ignored in Limit. First approach was not good. Working on a new approach to tackle the bug.
+  \item \pull{9050} - \textbf{[WIP]} Implemented Fourier sine/cosine series expansion.
+  \item \pull{8729} - Earlier \pyline{nan.is_rational()} returned \pyline{True}, fixed it to return \pyline{False}.
+  \item \pull{9075} - Earlier following type of limits computed incorrectly,
+    \begin{minted}{python}
+      >>> ex = (6**(n+1)+n+1)/(6**n+n)
+      >>> ex.limit(n, oo)
+      1
+    \end{minted}
+    Fixed it to return \pyline{6} (expected result)
+    \begin{minted}{python}
+      >>> ex.limit(n, oo)
+      6
+    \end{minted}
+\end{itemize}
+
+\subsubsection*{Issues/Bugs Caught}
+\begin{itemize}
+  \item \issue{9104} - \pyline{exp(x).taylor_term(n, x)} returned \pyline{TypeError}. \textbf{Caught} and \textbf{Fixed} the bug.
+  \item \issue{9077} - Fourier sine/cosine implementation. Sympy should have an implementation of the same. Issued a pull request to address the same.
+\end{itemize}
+
+% Extended description
+\section{The Project}
+
+In this section I will detail my vision for how the API will look and
+how the code will be structured. I expect this structure to be
+considerably enhanced under the guidance of my mentor.
+
+\subsection{Sequences}
+
+For the purpose of defining coefficients, I plan to implement Sequence
+based Classes inspired from sequences \cite{sequences} branch by
+Alexander U. Gudchenko. A \pyline{Sequence} will be finite or infinite
+\textit{lazily} evaluated list. Coefficients will only be evaluated
+when required. Coefficients evaluated once will be saved in an
+internal \pyline{dictionary} (sparse representation).
+
+\subsubsection{Sequences based on formula}
+
+To define coefficients based on a particular formula, a special
+\pyline{SeqFormula} class will be implemented.
+
+\begin{minted}{python}
+  >>> SeqFormula(n*(n+1), (n, 0, oo))
+  [0, 2, 6, 12, 20, ...]
+\end{minted}
+
+\subsubsection{Periodical Sequences}
+
+Similar to sequences based on formulas, sequences can also be defined
+periodically, such as
+
+\begin{minted}{python}
+  >>> SeqPer((1, 3, 8), (n, 0, oo))
+  [1, 3, 8, 1, 3, ...]
+\end{minted}
+
+\subsubsection{Sequences from a function}
+
+Sequences can also be generated using functions.
+
+\begin{minted}{python}
+  >>> SeqFunc(lambda n: n*(n+1), (n, 0, oo))
+  [0, 2, 6, 12, 20, ...]
+\end{minted}
+
+\subsubsection{Containment}
+
+All the above sequences can be generated using \pyline{Sequence} class.
+
+\begin{minted}{python}
+  >>> Sequence(function=lambda n: n*(n+1), bounds=(n, 0, oo))
+  [0, 2, 6, 12, 20, ...]
+  >>> Sequence(formula=n*(n+1), bounds=(n, 0, oo))
+  [0, 2, 6, 12, 20, ...]
+  >>> Sequence(periodical=(1, 3, 8), bounds=(n, 0, oo))
+  [1, 3, 8, 1, 3, ...]
+\end{minted}
+
+\subsubsection{Methods}
+
+The \pyline{coeff} method can be used for getting a coefficient for a particular n.
+
+\begin{minted}{python}
+  >>> per = Sequence(periodical=(1, 3, 8), bounds=(n, 0, oo))
+  >>> per.coeff(7)
+  1
+  >>> fun = Sequence(function=lambda n: n*(n+1), bounds=(n, 0, oo))
+  >>> fun.coeff(7)
+  56
+  >>> form = Sequence(formula=n*(n+1), bounds=(n, 0, oo))
+  >>> form.coeff(n-1) # supports symbolic coefficients
+  n*(n-1)
+\end{minted}
+
+\subsubsection{Operations}
+
+Addition, Subtraction, Multiplication, Division will be defined element-wise.
+
+\begin{minted}{python}
+  >>> a = Sequence(formula=n**2, bounds=(n, 0, oo))
+  >>> b = Sequence(formula=n, bounds=(n, 0, oo))
+  >>> a + b
+  [0, 2, 6, 12, 20, ...]
+  >>> a - b
+  [0, 0, 2, 6, 12, ...]
+  >>> a * b
+  [0, 8, 27, 64, 125, ...]
+\end{minted}
+
+Cauchy-Product \cite{convolution} can also be implemented, where
+
+$$cn =\sum\limits_{k=0}^n a_k b_{n-k}$$
+
+\subsection{SeriesData class}
+
+This class will represent series. All other series will use
+\pyline{SeriesData} to represent a series. Internally
+\pyline{SeriesData} class will use \pyline{Sequence} objects to define
+a series. Series expansion of \pyline{exp(x)} can be modeled using
+\textit{sequences}.
+
+\begin{minted}{python}
+  >>> an = Sequence(formula=1/factorial(n)), bounds=(n, 0, oo))
+  >>> xn = Sequence(formula=x**n), bounds=(n, 0, oo))
+  >>> a * b
+  [1, x, x**2/2, x**3/6, x**4/24, ...]
+\end{minted}
+
+In general \pyline{SeriesData} just zips the two sequences together
+over \emph{multiplication}. For constructing a series from known
+coefficients.
+
+\begin{minted}{python}
+  >>> an = Sequence(formula=1/factorial(n), bounds=(n, 0, oo)) # coefficients
+  >>> xn = Sequence(formula=x**n, bounds=(n, 0, oo)) # powers of x
+  >>> SeriesData(an, xn) # expansion of exp(x)
+  1 + x + x**2/2 + x**3/6 + x**4/24 + O(x**5)
+\end{minted}
+
+This class can further have methods for generating
+\textit{term} for a particular n, giving \textit{truncated} or
+\textit{infinite} series. Further, more classes can be formed which represent series in \pyline{x}, \pyline{sin(x)} and \pyline{cos(x)} (Fourier series), etc
+
+\subsection{SeriesX class}
+
+This class will represent series in \emph{x} and can be used to model various series based on powers of x.
+
+\begin{description}
+  \item [Taylor Series]\cite{taylor}
+    \begin{minted}{python}
+      >>> an = Sequence(formula=1/factorial(n), bounds=(n, 0, oo))
+      >>> SeriesX(an, x, a)
+      1 + e*x + e**2*x**2/2 + e**3*x**3/6 + e**4*x**4/24 + O(x**5)
+    \end{minted}
+\end{description}
+
+\subsubsection{Methods and Operations}
+
+\begin{itemize}
+  \item Addition, subtraction will be term-wise\hfill
+    \begin{minted}{python}
+      >>> an = Sequence(formula=n**2, bounds=(n, 0, oo))
+      >>> bn = Sequence(formula=n, bounds=(n, 0, oo))
+      >>> s1 = SeriesX(an, x)
+      >>> s2 = SeriesX(bn, x)
+      >>> s1 + s2
+      2*x + 6*x**2 + 12*x**3 + 20*x**4 + O(x**5)
+      >>> s1 - s2
+      3*x**2 + 6*x**3 + 12*x**4 + O(x**5)
+    \end{minted}
+  \item Differentiation and integration will also be term-wise\hfill
+    \begin{minted}{python}
+      >>> s1.diff(x)
+      1 + 8*x + 27*x**2 + 64*x**3 + O(x**4)
+      >>> integrate(s1, x)
+      x**2/2 + 4*x**3/3 + 9*x**4/4 + 16*x**5/5 + O(x**6)
+    \end{minted}
+  \item Division, raised to power, inverse, composition\hfill\\
+    All the methods and operations for truncated series will be modeled
+    on the algorithms implemented in \pyline{ring_series}\cite{ring}.
+  \item Infinite representation\hfill\\
+    Series can also be represented in infinite form (if available)
+    \begin{minted}{python}
+      >>> s1.infinite
+      Sum(n**2*x**n, (n, 0, oo))
+    \end{minted}
+\end{itemize}
+
+\subsection{Formal Power Series}
+
+Formal Power Series will allow returning infinite series expansions in
+the form of
+
+$$\sum\limits_{n=0}^\infty a_n x^n$$
+
+Currently Mathematica and others have this routine. Sympy should have
+it too. Last year some work was done on implementation of Formal Power Series\cite{fps1}\cite{fps2}. 
+Some part of the implementation is done and works correctly. I plan to integrate it with this system and complete the implementation.
+
+\begin{minted}{python}
+  >>> fps = FormalPowerSeries(exp(x), x, 0)
+  1 + x + x**2/2 + x**3/6 + x**4/24 + O(x**5)
+  >>> fps.infinite
+  Sum(x**n/factorial(n), (n, 0, oo))
+\end{minted}
+
+\subsubsection{Algorithm details}
+
+Algorithm used for computing \emph{Formal Power Series} is described in detail in
+papers\cite{gruntzkoepf}\cite{koepf}.
+
+\begin{description}
+  \item [Find a Simple DE]\hfill\\
+    For the algorithm to work, a \textit{simple} DE of form
+
+    $$f^n(x) + \sum\limits_{k=0}^{n-1} A_{k} f^k(x)$$
+
+    is to be obtained. DE can be obtained by following steps:
+    \begin{quote}
+      \begin{enumerate}
+        \item Set n := 1
+        \item Form the DE and solve for all $A_{n}$
+        \item if all $A_{n}$ are rational stop, else increase n and repeat steps.
+        \item If no solution is found for a suitable \textit{n}(papers
+          suggest 4), stop
+      \end{enumerate}
+    \end{quote}
+    \begin{minted}{python}
+      >>> simpleDE(exp(x), x)
+      -f(x) + Derivative(f(x), x)
+      >>> simpleDE(erf(x), x)
+      Derivative(f(x), x, x) + 2*x*Derivative(f(x), x)
+    \end{minted}
+  \item [Forming Corresponding RE]\hfill
+    \begin{enumerate}
+      \item This can be achieved by the substitution
+        $$x^j * f^k(x) \to pochhammer(n+1-j, k) * a(n+k-j)$$
+      \item In the case, where all the coefficients of DE are constants, substitute
+        $$a(n) \to b(n) * n!$$
+        This substitution is equivalent to
+        $$f^k(x) \to b(n+k)$$
+    \end{enumerate}
+    Example:
+    \begin{minted}{python}
+      >>> DE = simpleDE(exp(x), x)
+      >>> a = Function("a")
+      >>> DEtoRE(DE, a(n))
+      (n + 1) * a(n + 1) - a(n)
+    \end{minted}
+  \item [Solving the RE]\hfill\\
+    The RE obtained, can be solved using \pyline{rsolve} routine, already implemented in sympy using initial conditions.
+\end{description}
+
+To solve for any general point $x_0$ other than 0, following routine can be used
+
+\begin{quote}
+  $ x \to y + x_0 $
+
+  $ \pyline{FormalPowerSeries(f(y+x0), y, 0)} $
+
+  $ y \to x - x_0 $
+\end{quote}
+
+\subsection{Limits of Sequences}
+
+Implementing this algorithm will allow computing limits of series/summations, which are \textit{not} currently computed by sympy. This will improve the range of admissible functions of which limit can be computed. Algorithm for computing limits of sequences is explained in the paper\cite{limits}.
+
+\subsubsection{Applicability Criteria}
+This algorithm can be applied if the following conditions are fulfilled
+\begin{itemize}
+  \item Applies on expressions of the form $p_{n}/q_{n}$ where $p_{n}, q_{n} \to \infty$ when $n \to \infty$
+  \item $q_{n}$ should be asymptotically \textit{strictly} monotonous
+  \item terms are built from rational functions, indefinite sums and indefinite products over an indeterminate n, called $\Pi\Sigma-expressions$
+\end{itemize}
+
+\subsubsection{Algorithm Details}
+Difference operator, $\Delta$ is defined as
+  $$\Delta a_{n} = a_{n+1} - a_{n}$$
+Also, if
+$$\lim_{n \to oo}p_{n}/q_{n} = 0$$
+then $q_{n} \succ p_{n}$ or $q_{n}$ is the dominant term
+
+\begin{itemize}
+  \item Check for the applicability criteria as described in the above section.
+  \item Use the difference operator on the numerator and denominator.
+  \item Find the \textit{dominant} term of the numerator and the denominator. Drop all other terms.
+  \item Keep on doing recursively, until limit converges to a value.
+\end{itemize}
+
+\subsubsection{Implementation}
+
+\begin{itemize}
+  \item \textbf{Difference Operator} For this a new function can be implemented for finding
+    the delta of an expression
+    \begin{minted}{python}
+      >>> difference(n*2**n)
+      (n+2)*2**n
+      >>> difference(Sum(n*2**n, (n, 0, m)))
+      (m+1)*2**(m+1)
+    \end{minted}
+  \item \textbf{Dominant Term}
+    A simple function that computes the limit at infinity will do the trick
+    \begin{minted}{python}
+      >>> dominant(n, n**2)
+      n**2 # dominant term
+    \end{minted}
+    This process is similar to finding the maximum number from a list of numbers, and can be done in a similar fashion.
+  \item \textbf{Integrating into Limit}
+    This algorithm can then be used inside \pyline{Limit} for finding the applicable limits.
+\end{itemize}
+
+% Road-map
+\section{Road-map}
+I will not be available for two or three separate days in June (travelling). Apart from this I have no prior commitments.
+I have been following Sympy's mailing list discussions for a while now and have looked at some of the codebase.
+I will be able to devote 40-45 hrs a week.
+
+\subsection{Community Bonding Period}
+
+\begin{itemize}
+\item Discuss the project with my mentor in further detail.
+\item Get more acquainted with Sympy's codebase
+\item Read the below listed references in further detail.
+\end{itemize}
+
+\subsection{Coding Period}
+
+\begin{itemize}
+  \item Implement Sequence classes (First week of June)
+  \item Operations on sequences (Second week of June)
+  \item SeriesData and SeriesX classes (Third week of June)
+  \item Operations on SeriesX (First week of July)
+  \item Implement Formal Power Series (Third week of July)
+  \item Limits of Sequences (Second week of August)
+  \item One buffer week for any unexpected delays (or more enhancements)
+\end{itemize}
+
+\subsection{Post GSoC}
+Sympy provides me with a good platform to hone my programming skills and put my mathematical skills to good use.
+Series are one of the many great ideas to have evolved in mathematics. They are among my favorite mathematical topics. There are other areas in the field of mathematics where SymPy could do a much better job, and I would love to contribute and enhance them.
+
+\begin{thebibliography}{10}
+\bibitem{mathematica} Wolfram Research, \texttt{Mathematica}
+  \hfill\\
+  \url{http://www.wolfram.com/mathematica}
+\bibitem{pychat} Sartaj Singh, \texttt{PyChat}
+  \hfill\\
+  \url{https://github.com/leosartaj/PyChat}
+\bibitem{twisted} \texttt{Twisted}
+  \hfill\\
+  \url{https://twistedmatrix.com}
+\bibitem{sub} Sartaj Singh, \texttt{sub}
+  \hfill\\
+  \url{https://github.com/leosartaj/sub}
+\bibitem{autosign} Sartaj Singh, \texttt{autosign}
+  \hfill\\
+  \url{https://github.com/leosartaj/autosign}
+\bibitem{pycross} Sartaj Singh, \texttt{PyCross}
+  \hfill\\
+  \url{https://github.com/leosartaj/PyCross}
+\bibitem{minimax} \textit{Minimax}
+  \hfill\\
+  \url{http://en.wikipedia.org/wiki/Minimax}
+\bibitem{montecarlo} \textit{Monte-Carlo}
+  \hfill\\
+  \url{http://en.wikipedia.org/wiki/Monte\_Carlo\_method}
+\bibitem{sequences} Alexander U. Gudchenko, \texttt{sequences}
+  \hfill\\
+  \url{https://github.com/goodok/sympy/tree/sequences}
+\bibitem{convolution} \emph{convolution}
+  \hfill\\
+  \url{http://en.wikipedia.org/wiki/Cauchy\_product}
+\bibitem{taylor} \emph{Taylor/Maclaurin Series}
+  \hfill\\
+  \url{http://en.wikipedia.org/wiki/Taylor\_series}
+\bibitem{ring} Mario Pernici,  \pyline{ring_series}
+  \hfill\\
+  \url{https://github.com/sympy/sympy/blob/master/sympy/polys/ring_series.py}
+\bibitem{fps1} Avichal Dayal, \texttt{\#7846}
+  \hfill\\
+  \url{https://github.com/sympy/sympy/pull/7846}
+\bibitem{fps2} Avichal Dayal, \texttt{\#7618}
+  \hfill\\
+  \url{https://github.com/sympy/sympy/pull/7618}
+\bibitem{gruntzkoepf} Dominik Gruntz and Wolfram Koepf, \textit{Formal Power Series}
+\bibitem{koepf} Wolfram Koepf, \textit{Power Series in Computer Algebra}
+\bibitem{limits} Manuel Kauers, \textit{Computing Limits of Sequences}
+\end{thebibliography}
+
+\end{document}
