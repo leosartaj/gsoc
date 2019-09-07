@@ -8,3 +8,8 @@ of my submitted code sample.
 #### 2015 - Improving series package and limits
 Contains my **proposal** submitted to the [sympy](https://github.com/sympy/sympy) project.
 Proposal available in [latex](2015/proposal.tex) and [pdf](2015/proposal.pdf).
+
+#### Blog Posts
+
+- [Google Summer Of Code with SymPy](https://www.sartajsingh.dev/blog/google-summer-of-code-with-sympy/)
+- [GSoC: Fun Begins](https://www.sartajsingh.dev/blog/gsoc-fun-begins/)
